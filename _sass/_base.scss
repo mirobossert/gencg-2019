@@ -33,12 +33,22 @@ canvas {
   display: block;
 }
 
+img {
+  max-width: 100%;
+}
+
 .container {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
 }
 
 #header-main {
@@ -85,11 +95,27 @@ canvas {
   }
 }
 
-#header-main canvas {
+#header-main canvas {
   background: black;
 }
 .header-main-content {
   position: absolute;
   bottom: 0px;
   color: white;
+}
+
+.projects-item {
+  a {
+    display: block;
+  }
+  img {
+    border: 1px solid #ddd;
+  }
+}
+
+.projects-item--caption div {
+  display: inline-block;
+}
+.projects-item--category {
+  padding-right: .6rem;
 }
