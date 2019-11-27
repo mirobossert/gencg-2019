@@ -3,11 +3,11 @@
 
 // Global var
 var b = 255, p = false;
- 
+
 function setup() {
   // Canvas setup
   canvas = createCanvas(windowWidth, windowHeight-45);
-  canvas.parent("p5Container");
+  canvas.parent("canvas-container");
   // Detect screen density (retina)
   var density = displayDensity();
   pixelDensity(density);
@@ -56,7 +56,7 @@ function mouseReleased() {
 
 function keyPressed() {
   // Clear sketch
-  if (keyCode === 32) background(255) // 32 = SPACE BAR 
+  if (keyCode === 32) background(255) // 32 = SPACE BAR
   if (key == 's' || key == 'S') saveThumb(650, 350);
 }
 
