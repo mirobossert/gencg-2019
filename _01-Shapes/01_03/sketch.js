@@ -3,11 +3,11 @@
 
 // Global var
 var tileCount, actRandomSeed, actStrokeCap;
- 
+
 function setup() {
   // Canvas setup
   canvas = createCanvas(windowWidth, windowHeight-45);
-  canvas.parent("p5Container");
+  canvas.parent("canvas-container");
   // Detect screen density (retina)
   var density = displayDensity();
   pixelDensity(density);
@@ -16,7 +16,7 @@ function setup() {
   // Init Var
   tileCount = 20;
   actRandomSeed = 0;
-  actStrokeCap = ROUND; 
+  actStrokeCap = ROUND;
 }
 
 function draw() {

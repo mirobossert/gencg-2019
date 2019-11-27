@@ -5,6 +5,7 @@
   {% include nav-sketch.html %}
   <div id="canvas-container"></div>
 
+  {% include scripts-sketch.html %}
   {% for include in page.includes %}
     <script src="{{ include.src }}"></script>
   {% endfor %}
