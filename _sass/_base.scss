@@ -45,13 +45,7 @@ canvas {
   position: relative;
 }
 
-.navbar {
-  // position: fixed;
-  background: #eee;
-  top: 0;
-  width: 100%;
-  overflow: hidden;
-
+#main-nav {
   // sr-only
   position: absolute;
   width: 1px;
@@ -62,6 +56,14 @@ canvas {
   clip: rect(0,0,0,0);
   white-space: nowrap;
   border: 0;
+}
+
+.navbar {
+  // position: fixed;
+  background: #eee;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
 
   .container {
     display: flex;
