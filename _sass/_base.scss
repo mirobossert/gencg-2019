@@ -95,7 +95,8 @@ img {
   }
 }
 
-#header-main canvas {
+#header-main {
+  min-height: 100%;
   background: black;
 }
 .header-main-content {
