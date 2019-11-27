@@ -1,23 +1,25 @@
-{% for col in site.collections %}
-  {% if col.label != "posts" %}
-    <section id="{{ col.label }}" class="projects">
-      <div class="container">
-        <h3>{{ col.label }}</h3>
-        <ul class="grid">
-          {% for doc in col.docs %}
-            <li>
-              <a href="{{ site.baseurl }}{{ doc.url }}" class="projects-item">
-                {% assign thumb_url = doc.url | remove: "index.html" | append: doc.thumb_name %}
-                <img src="{{ site.baseurl }}{{ thumb_url }}" alt="">
-                <div class="projects-item--caption">
-                  <div class="projects-item--category">{{ doc.category }}</div>
-                  <div class="projects-item--name">{{ doc.title }}</div>
-                </div>
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </section>
-  {% endif %}
-{% endfor %}
+<main>
+  {% for col in site.collections %}
+    {% if col.label != "posts" %}
+      <section id="{{ col.label }}" class="projects">
+        <div class="container">
+          <h3>{{ col.label }}</h3>
+          <ul class="grid">
+            {% for doc in col.docs %}
+              <li>
+                <a href="{{ site.baseurl }}{{ doc.url }}" class="projects-item">
+                  {% assign thumb_url = doc.url | remove: "index.html" | append: doc.thumb_name %}
+                  <img src="{{ site.baseurl }}{{ thumb_url }}" alt="">
+                  <div class="projects-item--caption">
+                    <div class="projects-item--category">{{ doc.category }}</div>
+                    <div class="projects-item--name">{{ doc.title }}</div>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+</main>
