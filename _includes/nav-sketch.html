@@ -2,6 +2,16 @@
   <div class="container">
     <h2><a class="navbar-back" href="../../">< {{ current_collection }}</a></h2>
     <!-- todo: add mobile menu -->
+
+    <!-- assign current_collection -->
+    {% for col in site.collections %}
+      {% for doc in col.docs %}
+        {% if doc.id == page.id %}
+          {% assign current_collection = col.label %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+
     <ul class="nav navbar-nav navbar-right">
       {% for col in site.collections %}
         {% if col.label == current_collection %}
