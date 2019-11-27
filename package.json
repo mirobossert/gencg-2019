@@ -1,0 +1,33 @@
+{
+  "name": "gencg-h1901-miro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
+    "dev": "start & watch",
+    "start": "serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mirobossert/gencg-h1901-miro.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mirobossert/gencg-h1901-miro/issues"
+  },
+  "homepage": "https://github.com/mirobossert/gencg-h1901-miro#readme",
+  "devDependencies": {
+    "rollup": "^1.27.5",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "serve": "^11.2.0"
+  },
+  "dependencies": {
+    "p5": "^0.10.2"
+  }
+}
