@@ -78,7 +78,7 @@ a {
 .navbar {
   // position: fixed;
   border-bottom: 1px solid #ddd;
-  background: white;
+  background: rgba(255, 255, 255, 0.97);
   top: 0;
   width: 100%;
   overflow: hidden;
@@ -147,9 +147,10 @@ a {
   position: fixed;
   z-index: 1;
   opacity: 0;
-  transition: opacity .2s ease;
+  transition: opacity .2s .3s ease;
 }
 
 #main-nav--sketch:hover {
   opacity: 1;
+  transition: opacity .2s ease;
 }
