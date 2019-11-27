@@ -12,7 +12,7 @@
     <h2><a class="navbar-back" href="../../">< {{ current_collection }}</a></h2>
     <!-- todo: add mobile menu -->
 
-    <ul class="nav navbar-nav navbar-right">
+    <ul>
       {% for col in site.collections %}
         {% if col.label == current_collection %}
           {% for doc in col.docs %}

@@ -4,5 +4,9 @@
 <body>
   {% include nav-sketch.html %}
   <div id="canvas-container"></div>
+
+  {% for include in page.includes %}
+    <script src="{{ include.src }}"></script>
+  {% endfor %}
 </body>
 </html>
