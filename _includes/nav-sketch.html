@@ -1,8 +1,5 @@
 <nav id="main-nav--sketch" class="navbar">
   <div class="container">
-    <h2><a class="navbar-back" href="../../">< {{ current_collection }}</a></h2>
-    <!-- todo: add mobile menu -->
-
     <!-- assign current_collection -->
     {% for col in site.collections %}
       {% for doc in col.docs %}
@@ -12,11 +9,18 @@
       {% endfor %}
     {% endfor %}
 
+    <h2><a class="navbar-back" href="../../">< {{ current_collection }}</a></h2>
+    <!-- todo: add mobile menu -->
+
     <ul class="nav navbar-nav navbar-right">
       {% for col in site.collections %}
         {% if col.label == current_collection %}
           {% for doc in col.docs %}
-            <li><a class="page-scroll" href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index0 }}</a></li>
+            {% if page.url == doc.url %}
+            <li><a class="current" href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index0 }}</a></li>
+            {% else %}
+            <li><a href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index0 }}</a></li>
+            {% endif %}
           {% endfor %}
         {% endif %}
       {% endfor %}
