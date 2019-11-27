@@ -11,8 +11,8 @@ body {
 
 body {
   margin: 0;
-  font-family: var(--font-family-sans-serif);
-  font-size: 1rem;
+  font-family: var(--font-family-monospace);
+  font-size: 0.8rem;
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
@@ -92,6 +92,9 @@ img {
   }
   li {
     display: inline-block;
+  }
+  a {
+    text-decoration: none;
   }
 }
 
