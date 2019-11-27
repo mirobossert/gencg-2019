@@ -8,7 +8,7 @@ var actRandomSeed, count, points, increment;
 function setup() {
   // Canvas setup
   canvas = createCanvas(windowWidth, windowHeight);
-  canvas.parent("p5Container");
+  canvas.parent("header-main");
   // Detect screen density (retina)
   // Comment it out if the sketch is too slow
   var density = displayDensity();
@@ -33,7 +33,7 @@ function draw() {
   // let r = map(mouseY,0,height,10,radius);
   if (radius>width/1.7 && radius>height/1.7) increment = -increment;
   else if (radius<20) increment = -increment;
-  radius += increment; 
+  radius += increment;
   let angle = radians(360/count);
 
   for (let i=0; i<count; i++){
@@ -60,7 +60,7 @@ function draw() {
 }
 
 function keyPressed() {
-  if (key == DELETE || key == BACKSPACE) background(360);  
+  if (key == DELETE || key == BACKSPACE) background(360);
   if (key == 's' || key == 'S') saveThumb(650, 350);
 }
 
