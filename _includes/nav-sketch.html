@@ -17,9 +17,9 @@
         {% if col.label == current_collection %}
           {% for doc in col.docs %}
             {% if page.url == doc.url %}
-            <li><a class="current" href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index1 }}</a></li>
+            <li><a class="current" href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index }}</a></li>
             {% else %}
-            <li><a href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index1 }}</a></li>
+            <li><a href="{{ site.baseurl }}{{ doc.url }}">{{ forloop.index }}</a></li>
             {% endif %}
           {% endfor %}
         {% endif %}
