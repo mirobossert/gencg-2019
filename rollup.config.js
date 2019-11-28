@@ -16,7 +16,7 @@ export default entries.map((path, index) => ({
   output: {
     file: `${path}/bundle.js`,
     format: 'iife', // immediately-invoked function expression — suitable for <script> tags
-    sourcemap: true,
+    sourcemap: false,
   },
   plugins: [
     resolve(), // tells Rollup how to find modules in node_modules
