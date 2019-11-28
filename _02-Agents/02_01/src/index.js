@@ -13,7 +13,10 @@ function init() {
   scene = new THREE.Scene();
 
   geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-  material = new THREE.MeshNormalMaterial();
+  material = new THREE.MeshLambertMaterial({
+    color: 0xDEB468,
+    emissive: 0xB58C41,
+  });
 
   mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);

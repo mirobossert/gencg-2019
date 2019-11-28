@@ -49425,7 +49425,10 @@
 	  scene = new Scene();
 
 	  geometry = new BoxGeometry(0.2, 0.2, 0.2);
-	  material = new MeshNormalMaterial();
+	  material = new MeshLambertMaterial({
+	    color: 0xDEB468,
+	    emissive: 0xB58C41,
+	  });
 
 	  mesh = new Mesh(geometry, material);
 	  scene.add(mesh);
