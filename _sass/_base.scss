@@ -148,18 +148,18 @@ a {
 #main-nav--sketch {
   position: fixed;
   z-index: 1;
-  opacity: 0;
-  transition: opacity .2s .3s ease;
+  // opacity: 0;
+  // transition: opacity .2s .3s ease;
 }
 
 #main-nav--sketch .container {
   max-width: none;
 }
 
-#main-nav--sketch:hover {
-  opacity: 1;
-  transition: opacity .2s ease;
-}
+// #main-nav--sketch:hover {
+//   opacity: 1;
+//   transition: opacity .2s ease;
+// }
 
 .hide {
   display: none !important;
