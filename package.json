@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/mirobossert/gencg-h1901-miro#readme",
   "devDependencies": {
+    "@rollup/plugin-json": "^4.0.0",
     "rollup": "^1.27.5",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -28,8 +29,12 @@
     "serve": "^11.2.0"
   },
   "dependencies": {
+    "canvas-sketch-util": "^1.10.0",
+    "color-convert": "^2.0.1",
+    "nice-color-palettes": "^3.0.0",
     "p5": "^0.10.2",
     "remove": "^0.1.5",
-    "three": "^0.111.0"
+    "three": "^0.111.0",
+    "tweakpane": "^1.2.0"
   }
 }

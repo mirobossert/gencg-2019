@@ -1,8 +1,8 @@
-// Based on the code P_2_0_02.pde from
+// Based on the code P_2_1_1_01.pde from
 // Generative Gestaltung, ISBN: 978-3-87439-759-9
 
 // Global var
-var b = 255, p = false;
+var tileCount, actRandomSeed, actStrokeCap;
 
 function setup() {
   // Canvas setup
@@ -12,52 +12,52 @@ function setup() {
   var density = displayDensity();
   pixelDensity(density);
   // Colors and drawing modes
-  background(255);
   smooth();
   // Init Var
+  tileCount = 20;
+  actRandomSeed = 0;
+  actStrokeCap = ROUND;
 }
 
 function draw() {
+  // Canvas draw options
+  background(255);
   smooth();
   noFill();
 
-  if (p) {
-    b = random(255);
-    push();
+  // Stroke options
+  strokeCap(actStrokeCap);
+  randomSeed(actRandomSeed);
 
-    translate(width / 2, height / 2);
+  for (let gridX = 0; gridX < tileCount; gridX++) {
+    for (let gridY = 0; gridY < tileCount; gridY++) {
 
-    var circleResolution = toInt(map(mouseY + 100, 0, height, 2, 10));
-    var radius = mouseX - width / 2 + 0.5;
-    var angle = TWO_PI / circleResolution;
+      let posX = width / tileCount * gridX;
+      let posY = width / tileCount * gridY;
 
-    strokeWeight(2);
-    stroke(b, 25);
+      let toggle = toInt(random(0, 2));
 
-    beginShape();
-    for (i = 0; i <= circleResolution; i++) {
-      var x = 0 + cos(angle * i) * radius;
-      var y = 0 + sin(angle * i) * radius;
-      vertex(x, y);
+      if (toggle == 0) {
+        strokeWeight(mouseX / 20);
+        line(posX, posY, posX + width / tileCount, posY + height / tileCount);
+
+      } else if (toggle == 1) {
+        strokeWeight(mouseY / 20);
+        line(posX, posY + width / tileCount, posX + height / tileCount, posY);
+      }
     }
-    endShape();
-
-    pop();
   }
 }
 
 function mousePressed() {
-  p = true;
-}
-
-function mouseReleased() {
-  p = false;
+  actRandomSeed = toInt(random(100000));
 }
 
 function keyPressed() {
-  // Clear sketch
-  if (keyCode === 32) background(255) // 32 = SPACE BAR
   if (key == 's' || key == 'S') saveThumb(650, 350);
+  if (key == '1') actStrokeCap = ROUND;
+  if (key == '2') actStrokeCap = SQUARE;
+  if (key == '3') actStrokeCap = PROJECT;
 }
 
 // Tools
