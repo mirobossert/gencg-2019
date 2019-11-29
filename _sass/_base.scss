@@ -152,6 +152,10 @@ a {
   transition: opacity .2s .3s ease;
 }
 
+#main-nav--sketch .container {
+  max-width: none;
+}
+
 #main-nav--sketch:hover {
   opacity: 1;
   transition: opacity .2s ease;

@@ -60377,18 +60377,6 @@
 	  camera.updateProjectionMatrix();
 	}
 
-	// show and hide GUI
-	function toggleGui(event) {
-	  const panel = document.querySelector('.tp-dfwv');
-	  if (panel) {
-	    panel.classList.toggle('hide');
-	  }
-	}
-	function onkeydown(event) {
-	  if (event.code === 'KeyH') { toggleGui(); }
-	}
-	document.addEventListener('keydown', onkeydown);
-
 	init();
 	animate();
 

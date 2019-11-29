@@ -57432,12 +57432,6 @@
 	  camera.fov = _Math.clamp(fov, 10, 75);
 	  camera.updateProjectionMatrix();
 	}
-	eventTarget.addEventListener('keydown', event => {
-	  if (event.isComposing || event.keyCode === 229) {
-	    return;
-	  }
-	  // do something
-	});
 
 	init();
 	animate();

@@ -117,15 +117,5 @@ function onDocumentMouseWheel(event) {
   camera.updateProjectionMatrix();
 }
 
-function toggleGui(event) {
-  console.log(show)
-}
-eventTarget.addEventListener('keydown', event => {
-  if (event.isComposing || event.keyCode === 229) {
-    return;
-  }
-  // do something
-});
-
 init();
 animate();
