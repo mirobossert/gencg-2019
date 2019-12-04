@@ -1,10 +1,10 @@
-// import * as THREE from 'three';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Tweakpane from 'tweakpane';
 import random from 'canvas-sketch-util/random';
 import palettes from 'nice-color-palettes';
 import colorConvert from 'color-convert';
-// import CubemapToEquirectangular from 'three.cubemap-to-equirectangular';
+import CubemapToEquirectangular from 'three.cubemap-to-equirectangular';
 
 // import { hsv2hsl } from '../../../js/convert-colors.js';
 
@@ -18,7 +18,7 @@ const PARAMS = {
 const pane = new Tweakpane();
 
 // // global variables
-let direction, scene, camera, renderer, controls, win, palette, meshes, capturer360;
+let direction, scene, camera, renderer, controls, win, palette, meshes, equiManaged;
 
 let floors = 8; // nr. of floors is used to calculate elevation speed
 let elevationMin = 0;
@@ -33,20 +33,6 @@ function init() {
 
   scene = new THREE.Scene();
 
-  capturer360 = new CCapture({
-      format: 'threesixty',
-      display: true,
-      autoSaveTime: 3,
-  });
-
-  // function startCapture360(event) {
-  //     capturer360.start();
-  // }
-
-  // function stopCapture360(event) {
-  //     capturer360.stop();
-  // }
-
   camera = new THREE.PerspectiveCamera(75, win.viewportWidth / win.viewportHeight, 0.1, 1000);
   // camera = new THREE.OrthographicCamera( 1 / - 2, 1 / 2, 1 / 2, 1 / - 2, -10000, 10000);
 
@@ -55,8 +41,7 @@ function init() {
   // renderer.setSize(window.innerWidth, window.innerHeight);
   document.querySelector('#canvas-container').appendChild(renderer.domElement);
 
-  // equiManaged = new CubemapToEquirectangular( renderer, true );
-  // window.equiManaged = new CubemapToEquirectangular(renderer, true, '4K');
+  equiManaged = new CubemapToEquirectangular( renderer, true );
 
   // WebGL background color
   // renderer.setClearColor(PARAMS.background, 1);
@@ -64,7 +49,7 @@ function init() {
 
   camera.position.z = 5;
 
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
 
   // gui controls
   toggleAxesHelper(PARAMS.debug);
@@ -88,16 +73,9 @@ function init() {
   pane.addInput(PARAMS, 'elevation', {
     min: elevationMin, max: elevationMax,
   });
-  // pane.addSeparator();
-  // pane.addButton({title: 'Save Frame'}).on('click', () => {
-  //   equiManaged.update(camera, scene);
-  // });
   pane.addSeparator();
-  pane.addButton({title: 'Capture Start'}).on('click', () => {
-    capturer360.start();
-  });
-  pane.addButton({title: 'Capture Stop'}).on('click', () => {
-    capturer360.stop();
+  pane.addButton({title: 'Save Frame'}).on('click', () => {
+    equiManaged.update(camera, scene);
   });
 
   window.addEventListener('resize', (e) => {
@@ -196,7 +174,6 @@ function animate(now) {
   });
 
   controls.update();
-  capturer360.capture(renderer.domElement);
   renderer.render(scene, controls.object);
 };
 
@@ -261,7 +238,7 @@ function toggleAxesHelper(value) {
 function togglePanorama(lockCamera) {
   if (lockCamera) {
     // save camera position
-    // controls.saveState();
+    controls.saveState();
 
     // prevent camera movement
     controls.enableZoom = false;
