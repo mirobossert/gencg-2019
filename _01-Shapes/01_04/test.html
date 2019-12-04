@@ -20,8 +20,14 @@
   </style>
 </head>
 <body>
-  <div class="container"></div>
   <div id="canvas-container" class="canvas-container"></div>
+
+  <!-- <div class="container" style="position:fixed;width:100%;height:100%;top:0;left:0"></div> -->
+
+  <div class="buttonHolder" style="position:relative;text-align:center;">
+    <button class="startButton" onclick="startCapture360()">Start Capture</button>
+    <button class="saveButton"  onclick="stopCapture360()">Stop Capture</button>
+  </div>
 
   <script src="../../js/j360/three.min.js"></script>
   <script src="../../js/j360/OrbitControls.js"></script>

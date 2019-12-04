@@ -1,11 +1,25 @@
-![di logo](https://raw.githubusercontent.com/digitalideation/ba_222_gencg_h1901/master/docs/assets/images/di-logo-small.jpg "di logo")
+# Generative Computer Graphics - HS 2019
 
-# Generative Computer Graphics - Winter 2019
+This repo was used to track and showcase my work for the class "I.BA_222_GENCG.H1901". It is built on github pages (Jekyll).
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/webslides/webslides.svg?style=social)](https://twitter.com/digideation)
+## Useful shell workflow commands
 
-This repo hold students' work for the class "I.BA_222_GENCG.H1901 - Winter 2019" it is built on github pages (Jekyll).
+image sequence to video
+```shell
+ffmpeg -pattern_type glob -i './image-sequence/*.jpg' -vcodec libx264 -vf format=yuv420p movie.mp4
+```
+
+unpack multiple tar files:
+```shell
+cat *.tar | tar -xvf - -i
+```
+
+move all files from subfolders into current directory:
+```shell
+mv **/* .
+```
+
+## Structure
 
 ```
 ├── _01-Shapes        (Shapes collection)       + COLLECTIONS
@@ -26,7 +40,7 @@ This repo hold students' work for the class "I.BA_222_GENCG.H1901 - Winter 2019"
 ├── font-awesome                                +
 ├── fonts                                       +
 ├── img               (static images)
-├── js                (JS libraries) 
+├── js                (JS libraries)
 └── _config.yml       (gh pages config)
 ```
 
@@ -35,3 +49,5 @@ All examples should be placed in the corresponding **collection** folder. To cre
 All the info regarding the class as well as direct links to all materials (slides, notebooks, examples, etc... ) are accessible via the github pages for this repository:
 
 **[https://digitalideation.github.io/ba_222_gencg_h1901/](https://digitalideation.github.io/ba_222_gencg_h1901/)**
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)

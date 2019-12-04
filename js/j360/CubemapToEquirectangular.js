@@ -34,6 +34,10 @@ function CubemapToEquirectangular(renderer, provideCubeCamera, resolution) {
 	this.attachedCamera = null;
 
 
+	if (resolution === "8K") {
+		this.setSize(8192, 4096);
+	}
+
 	if (resolution === "4K") {
 		this.setSize(4096, 2048);
 	}
@@ -51,6 +55,9 @@ function CubemapToEquirectangular(renderer, provideCubeCamera, resolution) {
 	this.cubeMapSize = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)
 
 	if (provideCubeCamera) {
+		if (resolution === "8K") {
+			this.getCubeCamera(4096);
+		}
 
 		if (resolution === "4K") {
 			this.getCubeCamera(2048);
@@ -158,7 +165,9 @@ CubemapToEquirectangular.prototype.attachCubeCamera = function(camera) {
 CubemapToEquirectangular.prototype.convert = function(cubeCamera) {
 
 	this.quad.material.uniforms.map.value = cubeCamera.renderTarget.texture;
-	this.renderer.render(this.scene, this.camera, this.output, true);
+	this.renderer.setRenderTarget(this.output);
+	this.renderer.clear()
+	this.renderer.render(this.scene, this.camera);
 
 	var pixels = new Uint8Array(4 * this.width * this.height);
 	this.renderer.readRenderTargetPixels(this.output, 0, 0, this.width, this.height, pixels);
@@ -193,11 +202,13 @@ CubemapToEquirectangular.prototype.preBlob = function(cubeCamera) {
 	var autoClear = this.renderer.autoClear;
 	this.renderer.autoClear = true;
 	this.cubeCamera.position.copy(camera.position);
-	this.cubeCamera.updateCubeMap(this.renderer, scene);
+	this.cubeCamera.update(this.renderer, scene);
 	this.renderer.autoClear = autoClear;
 
 	this.quad.material.uniforms.map.value = cubeCamera.renderTarget.texture;
-	this.renderer.render(this.scene, this.camera, this.output, true);
+	this.renderer.setRenderTarget(this.output);
+	this.renderer.clear()
+	this.renderer.render(this.scene, this.camera);
 
 	var pixels = new Uint8Array(4 * this.width * this.height);
 	this.renderer.readRenderTargetPixels(this.output, 0, 0, this.width, this.height, pixels);
@@ -214,7 +225,7 @@ CubemapToEquirectangular.prototype.update = function(camera, scene) {
 	var autoClear = this.renderer.autoClear;
 	this.renderer.autoClear = true;
 	this.cubeCamera.position.copy(camera.position);
-	this.cubeCamera.updateCubeMap(this.renderer, scene);
+	this.cubeCamera.update(this.renderer, scene);
 	this.renderer.autoClear = autoClear;
 
 	this.convert(this.cubeCamera);
