@@ -2,6 +2,7 @@ import Tweakpane from 'tweakpane';
 import random from 'canvas-sketch-util/random';
 import palettes from 'nice-color-palettes';
 import colorConvert from 'color-convert';
+import { getRideDuration, simulateRide } from '../../../js/utils/animation';
 
 // gui parameters
 const PARAMS = {
@@ -17,14 +18,15 @@ const capturer360 = new CCapture({
   format: 'threesixty',
   display: true,
   autoSaveTime: 3,
+  framerate: 60,
 });
 
 let renderer, canvas;
 let meshes = [];
 let controls;
-let direction;
+let direction = 'up';
 
-let floors = 8; // nr. of floors is used to calculate elevation speed
+let rideDuration = getRideDuration(2); // nr. of floors is used to calculate elevation speed
 let elevationMin = 0;
 let elevationMax = 2;
 
@@ -69,6 +71,11 @@ function init() {
   pane.addInput(PARAMS, 'lockCamera', { label: 'lift view' }).on('change', (value) => {
     togglePanorama(value);
   });
+  // ELEVATOR POSITION
+  pane.addSeparator();
+  pane.addInput(PARAMS, 'elevation', {
+    min: elevationMin, max: elevationMax,
+  });
   // BUTTONS
   pane.addSeparator();
   pane.addButton({title: 'Start Capture'}).on('click', () => {
@@ -77,12 +84,51 @@ function init() {
   pane.addButton({title: 'Stop Capture'}).on('click', () => {
     stopCapture360();
   });
+  pane.addSeparator();
+  pane.addButton({title: 'Start Ride'}).on('click', () => {
+    startRide();
+  });
+  pane.addButton({title: 'Capture Ride'}).on('click', () => {
+    startCapture360();
+    startRide();
+  });
 
   generateScene();
 }
 
+let start = performance.now();
+let posY = 0;
+let isAnimating = false;
+function startRide() {
+  start = performance.now();
+  posY = PARAMS.elevation;
+  isAnimating = true;
+}
+
 function animate(delta) {
   requestAnimationFrame(animate);
+  const time = (performance.now() - start) / 1000;
+
+  /*
+  t is current time
+  b is start value
+  c is change in value
+  rd is ride duration
+  td is transition duration
+  */
+  if (isAnimating) {
+    if (direction === 'up') {
+      posY += simulateRide(time, 0, 1, rideDuration, 2.5) * 0.005;
+    } else {
+      posY -= simulateRide(time, 0, 1, rideDuration, 2.5) * 0.005;
+    }
+    // console.log(simulateRide(time, 0, 1, rideDuration, 2.5));
+    PARAMS.elevation = posY;
+    if (time > rideDuration) {
+      isAnimating = false;
+      // console.log('finished');
+    }
+  }
 
   meshes.forEach(mesh => {
     const f = 0.5;
@@ -96,7 +142,7 @@ function animate(delta) {
       mesh.originalPosition.y * f,
       mesh.originalPosition.z * f,
       delta * 0.00005,
-    ) - (PARAMS.elevation  - (elevationMax / 2));
+    ) - (PARAMS.elevation - (elevationMax / 2));
   });
 
   controls.update(delta);
@@ -158,7 +204,7 @@ function generateScene() {
   } else {
     PARAMS.elevation = elevationMax;
   }
-  console.log(PARAMS.elevation);
+
   pane.refresh();
 
   // remove elements from the scene if there are any
@@ -296,8 +342,35 @@ function onDocumentMouseWheel(event) {
   camera.updateProjectionMatrix();
 }
 
+
+/*
+* api for lift commands
+*/
 function restart() {
   generateScene();
+}
+function setDirection() {
+  if (direction === 'up') {
+    PARAMS.elevation = 0;
+  } else {
+    PARAMS.elevation = elevationMax;
+  }
+  // console.log(direction, PARAMS.elevation);
+  pane.refresh();
+  startRide();
+}
+
+document.addEventListener('keydown', onKeydown, false);
+function onKeydown(event) {
+  if (event.keyCode === 32) restart() // 32 = Space
+  if (event.keyCode === 38) {
+    direction = 'up';
+    setDirection() // 38 = ArrowUp
+  }
+  if (event.keyCode === 40) {
+    direction = 'down';
+    setDirection() // 40 = ArrowDown
+  }
 }
 
 

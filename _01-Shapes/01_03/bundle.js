@@ -61176,7 +61176,7 @@ void main()  {
 	});
 	var CubemapToEquirectangular_1 = CubemapToEquirectangular.CubemapToEquirectangular;
 
-	// import { hsv2hsl } from '../../../js/convert-colors.js';
+	// import { hsv2hsl } from '../../../js/utils/convert-colors.js';
 
 	// constants
 	const PARAMS = {

@@ -6,7 +6,7 @@ import palettes from 'nice-color-palettes';
 import colorConvert from 'color-convert';
 import CubemapToEquirectangular from 'three.cubemap-to-equirectangular';
 
-// import { hsv2hsl } from '../../../js/convert-colors.js';
+// import { hsv2hsl } from '../../../js/utils/convert-colors.js';
 
 // constants
 const PARAMS = {
