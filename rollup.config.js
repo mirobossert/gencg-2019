@@ -11,6 +11,7 @@ const entries = [
   './_01-Shapes/01_02',
   './_01-Shapes/01_03',
   './_01-Shapes/01_04',
+  './_01-Shapes/01_05',
   './_02-Agents/02_01',
 ];
 
