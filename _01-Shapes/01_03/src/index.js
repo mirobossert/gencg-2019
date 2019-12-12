@@ -1,14 +1,10 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Tweakpane from 'tweakpane';
 import random from 'canvas-sketch-util/random';
 import palettes from 'nice-color-palettes';
 import colorConvert from 'color-convert';
-import CubemapToEquirectangular from 'three.cubemap-to-equirectangular';
+import { getRideDuration, simulateRide } from '../../../js/utils/animation';
 
-// import { hsv2hsl } from '../../../js/utils/convert-colors.js';
-
-// constants
+// gui parameters
 const PARAMS = {
   debug: false,
   lockCamera: true,
@@ -17,90 +13,167 @@ const PARAMS = {
 };
 const pane = new Tweakpane();
 
-// // global variables
-let direction, scene, camera, renderer, controls, win, palette, meshes, equiManaged;
+// create a capturer that exports Equirectangular 360 JPG images in a TAR file
+const capturer360 = new CCapture({
+  format: 'threesixty',
+  display: true,
+  autoSaveTime: 3,
+  framerate: 30,
+});
 
-let floors = 8; // nr. of floors is used to calculate elevation speed
+let renderer, canvas;
+let meshes = [];
+let controls;
+let direction = 'up';
+
+let rideDuration = getRideDuration(2); // nr. of floors is used to calculate elevation speed
 let elevationMin = 0;
 let elevationMax = 2;
 
+// these objects need to be globally available for CCapture
+window.equiManaged;
+window.camera;
+window.scene;
+
+const win = {
+  pixelRatio: Math.min(window.devicePixelRatio, 2),
+  viewportWidth: window.innerWidth,
+  viewportHeight: window.innerHeight,
+};
+
+/*
+* initialize scene
+*/
 function init() {
-  win = {
-    pixelRatio: Math.min(window.devicePixelRatio, 2),
-    viewportWidth: window.innerWidth,
-    viewportHeight: window.innerHeight,
-  };
+  window.scene = new THREE.Scene();
 
-  scene = new THREE.Scene();
-
-  camera = new THREE.PerspectiveCamera(75, win.viewportWidth / win.viewportHeight, 0.1, 1000);
-  // camera = new THREE.OrthographicCamera( 1 / - 2, 1 / 2, 1 / 2, 1 / - 2, -10000, 10000);
+  window.camera = new THREE.PerspectiveCamera(75, win.viewportWidth / win.viewportHeight, 0.1, 1000);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
-  resize(win);
-  // renderer.setSize(window.innerWidth, window.innerHeight);
-  document.querySelector('#canvas-container').appendChild(renderer.domElement);
+  resize(win); // sets renderer size and dpr
 
-  equiManaged = new CubemapToEquirectangular( renderer, true );
+  window.equiManaged = new CubemapToEquirectangular(renderer, true, '8K');
 
-  // WebGL background color
-  // renderer.setClearColor(PARAMS.background, 1);
-  scene.background = new THREE.Color(PARAMS.background);
+  document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-  camera.position.z = 5;
+  controls = new THREE.OrbitControls(window.camera, renderer.domElement);
+  window.camera.position.z = 5;
 
-  controls = new OrbitControls(camera, renderer.domElement);
-
-  // gui controls
+  /*
+  * add gui items
+  */
+  // DEBUG
   toggleAxesHelper(PARAMS.debug);
   togglePanorama(PARAMS.lockCamera);
-
   pane.addInput(PARAMS, 'debug').on('change', (value) => {
     toggleAxesHelper(value);
   });
   pane.addInput(PARAMS, 'lockCamera', { label: 'lift view' }).on('change', (value) => {
     togglePanorama(value);
   });
-  pane.addInput(PARAMS, 'background', { input: 'color' }).on('change', (value) => {
-    const c = value.comps_;
-    const chsl = colorConvert.hsv.hsl(c[0],c[1],c[2]);
-    const color = `hsl(${chsl[0]}%, ${chsl[1]}%, ${chsl[2]}%)`;
-    // console.log(color, colorConvert.hsv.hex(c[0],c[1],c[2]));
-    scene.background = color;
-    // renderer.setClearColor(colorConvert.hsv.hsl(c[0],c[1],c[2]), 1);
-  });
+  // ELEVATOR POSITION
   pane.addSeparator();
   pane.addInput(PARAMS, 'elevation', {
     min: elevationMin, max: elevationMax,
   });
+  // BUTTONS
   pane.addSeparator();
-  pane.addButton({title: 'Save Frame'}).on('click', () => {
-    equiManaged.update(camera, scene);
+  pane.addButton({title: 'Start Capture'}).on('click', () => {
+    startCapture360();
+  });
+  pane.addButton({title: 'Stop Capture'}).on('click', () => {
+    stopCapture360();
+  });
+  pane.addSeparator();
+  pane.addButton({title: 'Start Ride'}).on('click', () => {
+    startRide();
+  });
+  pane.addButton({title: 'Capture Ride'}).on('click', () => {
+    startCapture360();
+    startRide();
   });
 
-  window.addEventListener('resize', (e) => {
-    win.viewportHeight = window.innerHeight;
-    win.viewportWidth = window.innerWidth;
-    resize(win);
-  }, false);
-  document.addEventListener('keydown', onKeydown, false);
+  generateScene();
+}
 
-  restart();
+let start = performance.now();
+let posY = 0;
+let isAnimating = false;
+function startRide() {
+  start = performance.now();
+  posY = PARAMS.elevation;
+  isAnimating = true;
+}
+
+function animate(delta) {
+  requestAnimationFrame(animate);
+  const time = (performance.now() - start) / 1000;
+
+  /*
+  t is current time
+  b is start value
+  c is change in value
+  rd is ride duration
+  td is transition duration
+  */
+  if (isAnimating) {
+    if (direction === 'up') {
+      posY += simulateRide(time, 0, 1, rideDuration, 2.5) * 0.005;
+    } else {
+      posY -= simulateRide(time, 0, 1, rideDuration, 2.5) * 0.005;
+    }
+    // console.log(simulateRide(time, 0, 1, rideDuration, 2.5));
+    PARAMS.elevation = posY;
+    if (time > rideDuration) {
+      isAnimating = false;
+      // console.log('finished');
+    }
+  }
+
+  meshes.forEach(mesh => {
+    const f = 0.5;
+    mesh.position.x = mesh.originalPosition.x + 0.25 * random.noise3D(
+      mesh.originalPosition.x * f,
+      mesh.originalPosition.y * f,
+      mesh.originalPosition.z * f,
+    );
+    mesh.position.y = mesh.originalPosition.y + 0.25 * random.noise3D(
+      mesh.originalPosition.x * f,
+      mesh.originalPosition.y * f,
+      mesh.originalPosition.z * f,
+      delta * 0.00005,
+    ) - (PARAMS.elevation - (elevationMax / 2));
+  });
+
+  controls.update(delta);
+
+  renderer.render(window.scene, window.camera);
+  capturer360.capture(canvas);
 }
 
 
- // Re-use the same Geometry across all our cubes
- const geometry = new THREE.BoxGeometry(1, 1, 1);
- // The # of cubes to create
- const chunks = 500;
+
+
+
+
+
+
+/*
+* generate scene
+*/
+
+// Re-use the same Geometry across all our cubes
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+// The # of cubes to create
+const chunks = 500;
 
 // reset scene
-function restart(event) {
+function generateScene() {
   // A group that will hold all of our cubes
   const container = new THREE.Group();
 
   // Get a palette for our scene
-  palette = random.pick(palettes);
+  const palette = random.pick(palettes);
 
   // Create each cube and return a THREE.Mesh
   meshes = Array.from(new Array(chunks)).map(() => {
@@ -115,7 +188,7 @@ function restart(event) {
     const mesh = new THREE.Mesh(geometry, material);
 
     // Randomize it
-    randomizeMesh(mesh);
+    randomizeMesh(mesh, palette);
 
     return mesh;
   });
@@ -131,7 +204,7 @@ function restart(event) {
   } else {
     PARAMS.elevation = elevationMax;
   }
-  console.log(PARAMS.elevation);
+
   pane.refresh();
 
   // remove elements from the scene if there are any
@@ -142,42 +215,10 @@ function restart(event) {
   scene.add(container);
 }
 
-const start = performance.now();
-let time = 0;
-let delta = 0;
-let before = start;
-function animate(now) {
-  requestAnimationFrame(animate);
-  delta = before - now;
-  before = now;
-  time += start;
-
-
-  // PARAMS.elevation = 1 * Math.sin(time) + 20;
-  // console.log(time, PARAMS.elevation);
-  // camera.position.y = PARAMS.elevation;
-
-  // Animate each mesh with noise
-  meshes.forEach(mesh => {
-    const f = 0.5;
-    mesh.position.x = mesh.originalPosition.x + 0.25 * random.noise3D(
-      mesh.originalPosition.x * f,
-      mesh.originalPosition.y * f,
-      mesh.originalPosition.z * f,
-    );
-    mesh.position.y = mesh.originalPosition.y + 0.25 * random.noise3D(
-      mesh.originalPosition.x * f,
-      mesh.originalPosition.y * f,
-      mesh.originalPosition.z * f,
-      time * 0.00001,
-    ) - (PARAMS.elevation  - (elevationMax / 2));
-  });
-
-  controls.update();
-  renderer.render(scene, controls.object);
-};
-
-function randomizeMesh(mesh) {
+/*
+* randomize mesh
+*/
+function randomizeMesh(mesh, palette) {
   // Choose a random point in a 3D volume between with no elements in the center
   const coords = [];
   const exclude = 0.1; // inner radius to exclude
@@ -217,6 +258,23 @@ function randomizeMesh(mesh) {
   mesh.scale.multiplyScalar(random.gaussian() * 0.25);
 };
 
+
+
+
+
+
+
+
+
+/*
+* handle window resize
+*/
+window.addEventListener('resize', (e) => {
+  win.viewportHeight = window.innerHeight;
+  win.viewportWidth = window.innerWidth;
+  resize(win);
+}, false);
+
 function resize({ pixelRatio, viewportWidth, viewportHeight }) {
   renderer.setPixelRatio(pixelRatio);
   renderer.setSize(viewportWidth, viewportHeight);
@@ -225,6 +283,20 @@ function resize({ pixelRatio, viewportWidth, viewportHeight }) {
   camera.updateProjectionMatrix();
 };
 
+/*
+* start and stop CCapture
+*/
+function startCapture360(event) {
+  capturer360.start();
+}
+
+function stopCapture360(event) {
+  capturer360.stop();
+}
+
+/*
+* toggle debug helpers
+*/
 function toggleAxesHelper(value) {
   if (!value) {
     scene.remove(scene.getObjectByName('axesHelper'));
@@ -235,6 +307,9 @@ function toggleAxesHelper(value) {
   }
 }
 
+/*
+* toggle camera position for debugging
+*/
 function togglePanorama(lockCamera) {
   if (lockCamera) {
     // save camera position
@@ -267,6 +342,27 @@ function onDocumentMouseWheel(event) {
   camera.updateProjectionMatrix();
 }
 
+
+/*
+* api for lift commands
+*/
+function restart() {
+  if (direction === 'up') {
+    PARAMS.elevation = 0;
+  } else {
+    PARAMS.elevation = elevationMax;
+  }
+
+  pane.refresh();
+
+  generateScene();
+  startRide();
+}
+
+/*
+* call order: direction - floor -space
+*/
+document.addEventListener('keydown', onKeydown, false);
 function onKeydown(event) {
   if (event.keyCode === 32) restart() // 32 = Space
   if (event.keyCode === 38) direction = 'up' // 38 = ArrowUp

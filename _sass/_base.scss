@@ -164,3 +164,7 @@ a {
 .hide {
   display: none !important;
 }
+
+body > div:empty {
+  visibility: hidden;
+}

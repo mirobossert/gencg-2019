@@ -9640,7 +9640,7 @@
 	const PARAMS = {
 	  debug: false,
 	  lockCamera: true,
-	  background: 0xffffff,
+	  background: '#ffffff',
 	  elevation: 0,
 	};
 	const pane = new Tweakpane();
@@ -9650,7 +9650,7 @@
 	  format: 'threesixty',
 	  display: true,
 	  autoSaveTime: 3,
-	  framerate: 60,
+	  framerate: 30,
 	});
 
 	let renderer, canvas;
@@ -9698,6 +9698,12 @@
 	  pane.addInput(PARAMS, 'lockCamera', { label: 'lift view' }).on('change', (value) => {
 	    togglePanorama(value);
 	  });
+	  // pane.addInput(PARAMS, 'background', { input: 'color' }).on('change', (value) => {
+	  //   const c = value.comps_;
+	  //   const hex = colorConvert.hsv.hex(c[0],c[1],c[2]);
+
+	  //   renderer.setClearColor(parseInt(hex, 16), 1);
+	  // });
 	  // ELEVATOR POSITION
 	  pane.addSeparator();
 	  pane.addInput(PARAMS, 'elevation', {
@@ -9840,6 +9846,8 @@
 	  }
 	  // Then add the group to the scene
 	  scene.add(container);
+
+	  renderer.setClearColor(random.pick(palette), 1);
 	}
 
 	/*
@@ -9971,32 +9979,27 @@
 	* api for lift commands
 	*/
 	function restart() {
-	  generateScene();
-	}
-	function setDirection() {
 	  if (direction === 'up') {
 	    PARAMS.elevation = 0;
 	  } else {
 	    PARAMS.elevation = elevationMax;
 	  }
-	  // console.log(direction, PARAMS.elevation);
+
 	  pane.refresh();
+
+	  generateScene();
 	  startRide();
 	}
 
+	/*
+	* call order: direction - floor -space
+	*/
 	document.addEventListener('keydown', onKeydown, false);
 	function onKeydown(event) {
 	  if (event.keyCode === 32) restart(); // 32 = Space
-	  if (event.keyCode === 38) {
-	    direction = 'up';
-	    setDirection(); // 38 = ArrowUp
-	  }
-	  if (event.keyCode === 40) {
-	    direction = 'down';
-	    setDirection(); // 40 = ArrowDown
-	  }
+	  if (event.keyCode === 38) direction = 'up'; // 38 = ArrowUp
+	  if (event.keyCode === 40) direction = 'down'; // 40 = ArrowDown
 	}
-
 
 	init();
 	animate();
