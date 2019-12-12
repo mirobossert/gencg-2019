@@ -13,7 +13,7 @@ const entries = [
   './_01-Shapes/01_04',
   './_01-Shapes/01_05',
   './_01-Shapes/01_06',
-  './_02-Agents/02_01',
+  './_02-Shaders/02_01',
 ];
 
 export default entries.map((path, index) => ({

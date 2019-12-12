@@ -17,5 +17,5 @@ collections:
   01-Shapes:
     output: true
 
-  02-Agents:
+  02-Shaders:
     output: true
