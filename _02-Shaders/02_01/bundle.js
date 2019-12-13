@@ -8894,16 +8894,16 @@
 	const pane = new Tweakpane();
 
 	// create a capturer that exports Equirectangular 360 JPG images in a TAR file
-	const capturer360 = new CCapture({
-	  format: 'threesixty',
+	const capturer = new CCapture({
+	  format: 'jpg',
 	  display: true,
 	  autoSaveTime: 3,
 	  framerate: 30,
 	});
 
-	let renderer, canvas, plane;
-	let controls;
+	let renderer, plane;
 	let direction = 'up';
+	let recording = false;
 	let elevationMin = 0;
 	let elevationMax = 2;
 
@@ -8924,11 +8924,8 @@
 	  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 	  resize(win); // sets renderer size and dpr
 
-	  window.equiManaged = new CubemapToEquirectangular(renderer, true, '8K');
-
 	  document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-	  controls = new THREE.OrbitControls(window.camera, renderer.domElement);
 	  window.camera.position.z = 200;
 
 	  /*
@@ -8941,17 +8938,17 @@
 	  // BUTTONS
 	  pane.addSeparator();
 	  pane.addButton({title: 'Start Capture'}).on('click', () => {
-	    startCapture360();
+	    startCapture();
 	  });
 	  pane.addButton({title: 'Stop Capture'}).on('click', () => {
-	    stopCapture360();
+	    stopCapture();
 	  });
 	  pane.addSeparator();
 	  pane.addButton({title: 'Start Ride'}).on('click', () => {
 	    startRide();
 	  });
 	  pane.addButton({title: 'Capture Ride'}).on('click', () => {
-	    startCapture360();
+	    startCapture();
 	    startRide();
 	  });
 
@@ -8966,10 +8963,8 @@
 
 	  plane.material.uniforms.uTime.value = time;
 
-	  controls.update(delta);
-
 	  renderer.render(window.scene, window.camera);
-	  capturer360.capture(canvas);
+	  capturer.capture(renderer.domElement);
 	}
 
 
@@ -9171,9 +9166,9 @@
 
 	    uniforms: {
 	      uTime: { type: 'f', value: 0 },
-	      uHue: {type: 'f', value: random.value()},
-	      uHueVariation: {type: 'f', value: .01},
-	      uGradient: {type: 'f', value: .5},
+	      uHue: {type: 'f', value: random.range(1, 10)},
+	      uHueVariation: {type: 'f', value: .1},
+	      uGradient: {type: 'f', value: 1},
 	      uDensity: {type: 'f', value: 1.5},
 	      uDisplacement: {type: 'f', value: 2},
 	    }
@@ -9207,7 +9202,9 @@
 	window.addEventListener('resize', (e) => {
 	  win.viewportHeight = window.innerHeight;
 	  win.viewportWidth = window.innerWidth;
-	  resize(win);
+	  if (!recording) {
+	    resize(win);
+	  }
 	}, false);
 
 	function resize({ pixelRatio, viewportWidth, viewportHeight }) {
@@ -9220,12 +9217,21 @@
 	/*
 	* start and stop CCapture
 	*/
-	function startCapture360(event) {
-	  capturer360.start();
+	function startCapture(event) {
+	  resize({
+	    pixelRatio: 1,
+	    viewportWidth: 6480,
+	    viewportHeight: 3840,
+	  });
+	  recording = true;
+	  capturer.start();
 	}
 
-	function stopCapture360(event) {
-	  capturer360.stop();
+	function stopCapture(event) {
+	  capturer.stop();
+	  capturer.save();
+	  recording = false;
+	  resize(win);
 	}
 
 	/*
@@ -9240,8 +9246,7 @@
 
 	  pane.refresh();
 
-	  generateScene();
-	  startRide();
+	  plane.material.uniforms.uHue.value = random.value();
 	}
 
 	/*
